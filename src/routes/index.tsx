@@ -1,6 +1,8 @@
 import { $, component$, useSignal, useStore, useVisibleTask$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { BirthdayFormModal } from "~/components/BirthdayFormModal";
+import CardWrapper from "~/components/CardWrapper";
+import Card from "~/components/CardWrapper";
 import { Birthday } from "~/lib/db";
 
 export default component$(() => {
@@ -8,19 +10,36 @@ export default component$(() => {
   const showBirthdayModal = useSignal(false);
   const birthdayList = useStore<Birthday[]>([]);
 
-  // only runs in client side
-  useVisibleTask$(() => {
-    const stored = localStorage.getItem('birthdays');
-    if (stored) {
-      const parsed = JSON.parse(stored) as Birthday[];
-      birthdayList.splice(0, birthdayList.length, ...parsed);
-    }
-  });
+  // // only runs in client side
+  // useVisibleTask$(() => {
+  //   const stored = localStorage.getItem('birthdays');
+  //   if (stored) {
+  //     const parsed = JSON.parse(stored) as Birthday[];
+  //     birthdayList.splice(0, birthdayList.length, ...parsed);
+  //   }
+  // });
 
   const handleSave = $((birthday: Birthday) => {
     birthdayList.push(birthday);
-    localStorage.setItem('birthdays', JSON.stringify(birthdayList));
+    console.log(birthdayList);
+    // localStorage.setItem('birthdays', JSON.stringify(birthdayList));
   });
+
+  // Remove this after adding DB
+  const birthdays = [
+    {
+      name: 'Biswajit Ghosh',
+      dob: '2000-02-11'
+    },
+    {
+      name: 'Madhurima Chakraborty',
+      dob:  '1997-04-16'
+    },
+    {
+      name: 'Siby Sabu',
+      dob: '1991-04-21'
+    }
+  ]
 
   return (
     <>
@@ -65,14 +84,18 @@ export default component$(() => {
           </div>
         </button>
       </div>
-      <ul>
-        {birthdayList.map((b, i) => (
-          <li key={i}>
-            {b.name} - {b.dob}
-          </li>
-        ))}
-      </ul>
+
+      <div>
+        <ul>
+          {birthdayList.map((b, i) => (
+            <li key={i}>
+              {b.name} - {b.dob}
+            </li>
+          ))}
+        </ul>
+      </div>
       <BirthdayFormModal crazyCat={showBirthdayModal} onSave$={handleSave} />
+      <CardWrapper birthday={birthdays} />
     </>
   );
 });
